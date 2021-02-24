@@ -1,0 +1,76 @@
+datashow.blade.php *******************
+
+@extends('welcome');
+@section('contain')
+  
+    <div class="container">
+      <br>
+		<table class="table">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">name</th>
+		      <th scope="col">image</th>
+		       <th scope="col">Create_at</th>
+		       <th scope="col">Option</th>
+		    </tr>
+		  </thead>
+		  <tbody> 
+		  @foreach($show as $row) 
+		    <tr>
+		        <td>{{$row->id}}</td>
+		        <td>{{$row->name}}</td>
+		        <td><img src="{{ URL::to( $row->image) }}" style=" height: 60px; width: 60px;"></td>
+                <td>{{$row->created_at}}</td>
+		      <td>
+		      	<a href="{{URL::to('edit/profile/'.$row->id)}}" class="btn btn-sm btn-primary">Edit</a>
+		      	<a href="{{URL::to('delete/profile/'.$row->id)}}" class="btn btn-sm btn-success">Delete</a>
+		      	<a href="{{URL::to('view/profile/'.$row->id) }}" class="btn btn-sm btn-info">View</a>
+		      </td>
+		    </tr>
+		   @endforeach
+
+		  </tbody>
+	</table>
+ </div>
+ 
+@endsection
+
+
+web.php ***************
+
+Route::get('view/profile/{id}',[ShowProfile::class,'Showprofile']);
+
+
+
+
+ShowProfile.php **************
+
+
+  public function Showprofile($id){
+
+	  	    $post=DB::table('users')
+	  	    ->join('use','use.id','=','users.id')
+	  	    ->select('users.image','users.id','use.name','use.created_at')
+	  	    ->where('users.id',$id)
+                    ->first();
+
+        return view('page.profileshow',compact('post')); 
+
+  }
+
+profileshow.blade.php *********************
+
+@extends('welcome');
+@section('contain')
+  
+    <div class="container">
+     
+	 
+	  	<p>ID : {{$post->id}}</p>	
+	  	<p>Full Name : {{$post->name}}</p>
+	  	<img src="{{  URL::to( $post->image) }}" style=" height: 60px; width: 60px;">
+	  
+  </div>
+ 
+@endsection

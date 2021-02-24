@@ -1,0 +1,118 @@
+datashow.blade.php*****************
+
+@extends('welcome');
+@section('contain')
+  
+    <div class="container">
+      <br>
+		<table class="table">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">Full Name</th>
+		      <th scope="col">Address</th>
+		      <th scope="col">Created at</th>
+		       <th scope="col">Option</th>
+		    </tr>
+		  </thead>
+		  <tbody> 
+		  @foreach($show as $row) 
+		    <tr>
+		        <td>{{$row->id}}</td>	
+		        <td>{{$row->name}}</td>
+		        <td>{{$row->address}}</td>
+		        <td>{{$row->created_at}}</td>
+		      <td>
+		      	<a href="{{URL::to('edit/profile/'.$row->id)}}" class="btn btn-sm btn-primary">Edit</a>
+		      	<a href="{{URL::to('delete/profile/'.$row->id)}}" class="btn btn-sm btn-success" id="delete">Delete</a>
+		      	<a href="{{URL::to('view/profile/'.$row->id)}}" class="btn btn-sm btn-info">View</a>
+		      </td>
+		    </tr>
+		   @endforeach
+
+		  </tbody>
+	</table>
+ </div>
+ 
+@endsection
+
+
+
+web.php *********************
+
+use App\Http\Controllers\ShowProfile;
+use Illuminate\Support\Facades\Route;
+
+
+Route::get('edit/profile/{id}',[ShowProfile::class,'Profileedit']);
+
+Route::post('update/profile/{id}',[ShowProfile::class,'Dataupdate']);
+
+
+
+
+Showprofile.php************************
+
+
+  public function Profileedit($id){
+
+              $message=DB::table('uses')->where('id',$id)->first();
+              return view('page.dataupdatehow',compact('message'));
+
+	     }
+
+	     public function Dataupdate(Request $request,$id){
+           
+             $validatedData = $request->validate([
+               'name' =>  'required|max:15',
+               'address' => 'required|max:255|min:8',
+               ]);
+	       
+	       $data=array();
+	       $data['name']=$request->name;
+	       $data['address']=$request->address;
+
+	       $checkmessage=DB::table('uses')->where('id',$id)->update($data);
+
+	       return Redirect()->route('showdata');
+
+	     }
+
+
+
+showupdateshow.blade.php ******************
+
+
+@extends('welcome');
+@section('contain')
+  
+        <div class="container">
+
+
+           @if ($errors->any())
+	         <div class="alert alert-danger">
+	           <ul>
+	            @foreach ($errors->all() as $error)
+	                <li>{{ $error }}</li>
+	            @endforeach
+	          </ul>
+	       </div>
+	     @endif
+
+           <form action="{{url('update/profile/'.$message->id)}}" method='post'>
+           	 @csrf
+			  <div class="form-group">
+			    <label>Full Name</label>
+			    <input type="text" class="form-control" value="{{$message->name}}" name="name">
+			  </div>
+			  <div class="form-group">
+			    <label>Address</label>
+			    <input type="text" class="form-control" value="{{$message->address}}" name="address">
+			  </div>
+			 
+			  <button type="submit" class="btn btn-primary">Update</button>
+			</form>
+
+         </div>
+
+@endsection

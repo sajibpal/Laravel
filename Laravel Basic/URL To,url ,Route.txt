@@ -1,0 +1,64 @@
+*************welcome.php ************************
+
+  <div class="content">
+                <div class="title m-b-md">
+                    Laravel
+                </div>
+
+                <div class="links">
+                    <a href="{{url('/')}}">Home</a>
+                    <a href="{{URL::to('about')}}">About</a>
+                    <a href="{{route('aboutpage')}}">aboutpage info</a>
+                                    
+                </div>
+
+
+
+***********ShowProfile.php **************
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class ShowProfile extends Controller
+{
+  
+     public function Pal()
+    {
+      return view('aboutpage'); 
+    }
+}
+
+
+
+
+****web.php ***************
+
+
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
+Route::get('/about',function(){
+
+	echo "this is about page";
+});
+
+
+//for Route URl for sequrity set browser 
+
+Route::get(md5('/aboutpage'),'ShowProfile@Pal')->name('aboutpage');
+
+
+
+
+ 

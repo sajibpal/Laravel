@@ -1,0 +1,67 @@
+datashow.blade.php*******************
+
+@extends('welcome');
+@section('contain')
+  
+    <div class="container">
+      <br>
+		<table class="table">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">name</th>
+		      <th scope="col">image</th>
+		       <th scope="col">Create_at</th>
+		       <th scope="col">Option</th>
+		    </tr>
+		  </thead>
+		  <tbody> 
+		  @foreach($show as $row) 
+		    <tr>
+		        <td>{{$row->id}}</td>
+		        <td>{{$row->name}}</td>
+		        <td><img src="{{ URL::to( $row->image) }}" style=" height: 60px; width: 60px;"></td>
+                <td>{{$row->created_at}}</td>
+		      <td>
+		      	<a href="{{URL::to('edit/profile/'.$row->id)}}" class="btn btn-sm btn-primary">Edit</a>
+		      	<a href="{{URL::to('delete/profile/'.$row->id)}}" class="btn btn-sm btn-success">Delete</a>
+		      	<a href="{{URL::to('view/profile/'.$row->id) }}" class="btn btn-sm btn-info">View</a>
+		      </td>
+		    </tr>
+		   @endforeach
+
+		  </tbody>
+	</table>
+ </div>
+ 
+@endsection
+
+
+web.php *****************
+
+Route::get('delete/profile/{id}',[ShowProfile::class,'ShowprofileDelete']);
+
+
+
+
+ShowProfile.php **************
+
+ public function ShowprofileDelete($id){
+
+        $link=DB::table('users')->where('id',$id)->first();
+
+        $image=$link->image;
+	  	   
+         $delete= DB::table('users')->where('id',$id)->delete();
+
+          DB::table('use')->where('id',$id)->delete();
+
+	  	    if($delete){
+
+	  	    	//project folder image delete 
+
+               unlink($image);
+	  	    }
+    }
+
+

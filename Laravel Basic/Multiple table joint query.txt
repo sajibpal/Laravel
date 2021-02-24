@@ -1,0 +1,66 @@
+Showprofile.php *******************
+
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use DB;
+class ShowProfile extends Controller
+{
+    //
+     
+	  public function ShowJointimage(){
+
+	  	    $show=DB::table('users')
+	  	    ->join('use','use.id','=','users.id')
+	  	    ->select('users.image','users.id','use.name','use.created_at')
+                    ->get();
+
+
+        return view('page.datashow',compact('show')); 
+
+	  }
+   
+}
+
+
+Showdata.blade.php ********************
+
+
+@extends('welcome');
+@section('contain')
+  
+    <div class="container">
+      <br>
+		<table class="table">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">name</th>
+		      <th scope="col">image</th>
+		       <th scope="col">Create_at</th>
+		       <th scope="col">Option</th>
+		    </tr>
+		  </thead>
+		  <tbody> 
+		  @foreach($show as $row) 
+		    <tr>
+		        <td>{{$row->id}}</td>
+		        <td>{{$row->name}}</td>
+		        <td><img src="{{ asset('public/imagefile/'. $row->image) }}" style=" height: 60px; width: 60px;"></td>
+                <td>{{$row->created_at}}</td>
+		      <td>
+		      	<a href="{{URL::to('edit/profile/'.$row->id)}}" class="btn btn-sm btn-primary">Edit</a>
+		      	<a href="{{URL::to('delete/profile/'.$row->id)}}" class="btn btn-sm btn-success" id="delete">Delete</a>
+		      	<a href="{{URL::to('view/profile/'.$row->id) }}" class="btn btn-sm btn-info">View</a>
+		      </td>
+		    </tr>
+		   @endforeach
+
+		  </tbody>
+	</table>
+ </div>
+ 
+@endsection

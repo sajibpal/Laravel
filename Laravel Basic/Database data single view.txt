@@ -1,0 +1,85 @@
+
+***DAtabase data read kore table show korara por methode hobe***********
+
+
+datashow.blade.php******************
+
+
+
+@extends('welcome');
+@section('contain')
+  
+    <div class="container">
+      <br>
+		<table class="table">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">Full Name</th>
+		      <th scope="col">Address</th>
+		      <th scope="col">Created at</th>
+		       <th scope="col">Option</th>
+		    </tr>
+		  </thead>
+		  <tbody> 
+		  @foreach($show as $row) 
+		    <tr>
+		        <td>{{$row->id}}</td>	
+		        <td>{{$row->name}}</td>
+		        <td>{{$row->address}}</td>
+		        <td>{{$row->created_at}}</td>
+		      <td>
+		      	<a href="" class="btn btn-sm btn-primary">Edit</a>
+		      	<a href="" class="btn btn-sm btn-success">Delete</a>
+		      	<a href="{{URL::to('view/profile/'.$row->id)}}" class="btn btn-sm btn-info">View</a>
+		      </td>
+		    </tr>
+		   @endforeach
+
+		  </tbody>
+	</table>
+ </div>
+ 
+@endsection
+
+
+
+web.php ****************
+
+use App\Http\Controllers\ShowProfile;
+use Illuminate\Support\Facades\Route;
+
+Route::get('view/profile/{id}',[ShowProfile::class,'Profileview']);
+
+
+
+Shoeprofile.blade.php *****************
+
+
+
+
+	     public function Profileview($id){
+
+             $message=DB::table('uses')->where('id',$id)->first();
+             return view ('page.profileshow')->with('sajib',$message);
+
+	     }
+
+
+
+profileshow.blade.php *************
+
+
+@extends('welcome');
+@section('contain')
+  
+    <div class="container">
+     
+	  <ol>
+	  	<li>ID : {{$sajib->id}}</li>	
+	  	<li>Full Name : {{$sajib->name}}</li>
+	  	<li>Address : {{$sajib->address}}</li>
+	  </ol>
+  </div>
+ 
+@endsection

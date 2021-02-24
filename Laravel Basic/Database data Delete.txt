@@ -1,0 +1,97 @@
+datashow.blade.php ***************************
+
+
+@extends('welcome');
+@section('contain')
+  
+    <div class="container">
+      <br>
+		<table class="table">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">Full Name</th>
+		      <th scope="col">Address</th>
+		      <th scope="col">Created at</th>
+		       <th scope="col">Option</th>
+		    </tr>
+		  </thead>
+		  <tbody> 
+		  @foreach($show as $row) 
+		    <tr>
+		        <td>{{$row->id}}</td>	
+		        <td>{{$row->name}}</td>
+		        <td>{{$row->address}}</td>
+		        <td>{{$row->created_at}}</td>
+		      <td>
+		      	<a href="{{URL::to('edit/profile/'.$row->id)}}" class="btn btn-sm btn-primary">Edit</a>
+		      	<a href="{{URL::to('delete/profile/'.$row->id)}}" class="btn btn-sm btn-success" id="delete">Delete</a>
+		      	<a href="{{URL::to('view/profile/'.$row->id)}}" class="btn btn-sm btn-info">View</a>
+		      </td>
+		    </tr>
+		   @endforeach
+
+		  </tbody>
+	</table>
+ </div>
+ 
+@endsection
+
+
+
+web.php ****************
+
+use App\Http\Controllers\ShowProfile;
+use Illuminate\Support\Facades\Route;
+
+
+Route::get('delete/profile/{id}',[ShowProfile::class,'Profiledelete']);
+
+
+Showprofile.php*****************
+
+
+ public function Profiledelete($id){
+
+	     	
+             DB::table('uses')->where('id',$id)->delete();
+
+              return Redirect()->route('showdata');
+	     }
+
+
+
+welcome.blade.php**********************
+
+//for sweet alert for code 
+
+<script src="{{asset('https://unpkg.com/sweetalert/dist/sweetalert.min.js')}}"> </script>
+
+  <script>
+
+    $(document).on("click","#delete",function(e){
+      
+      e.preventDefault();
+      var link=$(this).attr("href") ;
+      swal({
+        title: "Are you sure?",
+        text: "Once deleted, you will not be able to recover this imaginary file!",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    })
+    .then((willDelete) => {
+      if (willDelete) {
+           
+          window.location.href=link;
+             
+      } else {
+        swal(" safe data!");
+       }
+    });
+
+    });
+
+   </script>
+
+  

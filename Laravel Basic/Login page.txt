@@ -1,0 +1,148 @@
+Login.blade.php*********************
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+<div class="container">
+	<div class="d-flex justify-content-center h-100">
+		<div class="card">
+			<div class="card-header">
+				<h3>Sign In</h3>
+				<div class="d-flex justify-content-end social_icon">
+					<span><i class="fab fa-facebook-square"></i></span>
+					<span><i class="fab fa-google-plus-square"></i></span>
+					<span><i class="fab fa-twitter-square"></i></span>
+				</div>
+			</div>
+			<div class="card-body">
+
+                     <p class="alert-danger"> 
+                                          //error message show 
+                       <?php
+                       $messege=Session::get('messege');
+    
+                       if($messege){
+                          echo $messege; 
+                          Session::put('messege',null);
+
+                         }
+                           ?>
+                         </p>
+             
+				<form action="{{url('/admin_deshbord')}}" method="post">
+
+					{{ csrf_field() }}
+
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-user"></i></span>
+						</div>
+						<input type="text" class="form-control" name="email" placeholder="username">
+						
+					</div>
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-key"></i></span>
+						</div>
+						<input type="password" class="form-control" name="password" placeholder="password">
+					</div>
+					<div class="row align-items-center remember">
+						<input type="checkbox">Remember Me
+					</div>
+					<div class="form-group">
+						<input type="submit" value="Login" class="btn float-right login_btn">
+					</div>
+				</form>
+
+			</div>
+			
+		</div>
+	</div>
+</div>
+</body>
+</html>
+
+
+
+web.php **************
+
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\adminController;
+
+
+Route::get('/', function () {
+    return view('home');
+});
+
+
+Route::get('/login',[adminController::class,'Adminlogin']);
+
+Route::get('/deshbord',[adminController::class,'deshboard']);
+
+Route::post('/admin_deshbord',[adminController::class,'Showdeshboard']);
+
+
+adminController.php *******************
+
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;**********
+use DB;***********
+use Session;************
+session_start();**********
+
+class adminController extends Controller
+{
+
+	public function Adminlogin(){
+
+		return view("admin.login");
+	}
+
+
+	
+
+	public function Showdeshboard(Request $request){
+
+		
+		$admin_mail=$request->email;
+		$admin_password=md5($request->password);
+        
+                $result=DB::table('admins')  
+                    ->where('email',$admin_mail)  //email,password database columa name
+                    ->where('password',$admin_password)
+                    ->first();
+
+              if($result) {
+                 
+                 Session::put('admin_name',$result->name);   //name,id database columa name
+                 Session::put('admin_id',$result->id);
+                 return Redirect::to('/deshbord');
+
+              } else{
+
+                 Session::put('messege','Email or password no valid');
+                  return Redirect::to('/login');
+              }    
+
+	}
+
+	public function deshboard(){
+
+		
+		return view("admin.dashboard");
+
+	}
+   
+   
+}

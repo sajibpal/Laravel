@@ -1,0 +1,76 @@
+Web.php***************
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
+//url /aboutpage dile open hobe page
+
+Route::get('/about',function(){
+	echo "welcome about this page";
+});
+
+Route::get('/aboutpage',function(){
+   
+   return view('aboutpage');
+
+ });
+
+
+
+
+//url /aboutpage/50 number dile open hobe page
+
+ Route::get('/aboutpage/{id}',function($id){
+   
+   echo $id;
+   return view('aboutpage');
+ });
+
+
+
+//for link by page show
+Route::view('aboutpage','aboutpage');
+
+
+
+
+//url /grouplink /about or /aboutpage  directory by show page
+
+Route::prefix('grouplink')->group(function(){
+  
+  Route::get('/about',function(){
+	echo "welcome about this page";
+});
+
+Route::get('/aboutpage',function(){
+
+   return view('aboutpage');
+ });
+
+ });
+
+
+
+
+welcome.blade.php *******************
+
+
+  <div class="content">
+                <div class="title m-b-md">
+                    Laravel
+                </div>
+
+ <a href="aboutpage">Got to home about page </a>
+
+                <div class="links">
+                    <a href="https://laravel.com/docs">Docs</a>
+                    <a href="https://laracasts.com">Laracasts</a>
+                    <a href="https://laravel-news.com">News</a>
+                    <a href="https://blog.laravel.com">Blog</a>
+                    <a href="https://nova.laravel.com">Nova</a>
+                    <a href="https://forge.laravel.com">Forge</a>
+                    <a href="https://vapor.laravel.com">Vapor</a>
+                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                </div>

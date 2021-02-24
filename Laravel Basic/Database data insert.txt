@@ -1,0 +1,172 @@
+welcome.blade.php **********************
+
+
+     <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light bg-success">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{{url('/')}}">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url('aboutpage')}}">About page</a>
+          </li>
+           <li class="nav-item">
+            <a class="nav-link" href="{{route('form')}}">Form data</a>  *********************
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Dropdown
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </nav>
+
+        <div>
+          @yield('contain')
+        </div>
+      
+     </div>
+
+
+
+
+web.blade.php **********************
+
+
+<?php
+
+use App\Http\Controllers\ShowProfile;
+use Illuminate\Support\Facades\Route;
+
+
+
+
+Route::get('/form',[ShowProfile::class,'Form'])->name('form');
+
+
+Route::post('page/formdata',[ShowProfile::class,'Datainsert'])->name('data');
+
+
+form.blade.php ***************************
+
+
+@extends('welcome');
+@section('contain')
+  
+        <div class="container">
+
+
+         // for error validation message show 
+
+           @if ($errors->any())
+	         <div class="alert alert-danger">
+	           <ul>
+	            @foreach ($errors->all() as $error)
+	                <li>{{ $error }}</li>
+	            @endforeach
+	          </ul>
+	       </div>
+	     @endif
+
+  
+        //form data submit field
+
+           <form action="{{ route('data') }}" method='post'>
+           	 @csrf
+			  <div class="form-group">
+			    <label>Full Name</label>
+			    <input type="text" class="form-control"  name="name">
+			  </div>
+			  <div class="form-group">
+			    <label>Address</label>
+			    <input type="text" class="form-control" name="address">
+			  </div>
+			 
+			  <button type="submit" class="btn btn-primary">Submit</button>
+			</form>
+
+         </div>
+
+@endsection
+
+
+
+
+Showprofile.php **************************
+
+ 
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use DB; // DB insert korte hobe
+ 
+class ShowProfile extends Controller
+{
+    //
+     public function Sajib()
+	    {
+	        return view('welcome'); 
+	    }
+	  
+	     public function Form()
+	    {
+	       return view('page.form'); 
+	    }
+
+	      public function Data(Request $request)
+	      {
+                   
+                //for inpput field and data base data insert validation
+                //name,address database table name and form field name same hote because duto ak sathe check korbe
+
+	      	 $validatedData = $request->validate([
+                'name' =>   'required|unique:uses|max:15|min:8',
+                'address' => 'required|unique:uses|max:255|min:8',
+
+               ]);
+	       
+
+              //database data insert 
+
+	       $data=array();
+	       $data['name']=$request->name;
+	       $data['address']=$request->address;
+
+	       $checkmessage=DB::table('uses')->insert($data);
+	       
+	       return Redirect()->route('showdata'); ///after insert data show in table
+            
+             //or  
+             // return Redirect()->to('/');
+
+	       // for json data view for test
+	      //return response()->json($data);
+
+           
+	       
+	    }
+}
+ 

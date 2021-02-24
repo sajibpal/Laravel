@@ -1,0 +1,54 @@
+web.php ********************
+
+Route::get('get/session',[Sajibcontroller::class,'getSession']);
+
+Route::get('set/session',[Sajibcontroller::class,'setSession']);
+
+Route::get('delete/session',[Sajibcontroller::class,'deleteSession']);
+
+
+
+Sajibcontroller.php******************
+
+
+<?php
+
+
+class Sajibcontroller extends Controller
+{
+    //
+
+public function getSession(Request $request){
+
+   
+   if($request->session()->has('name')){
+     
+      echo $request->session()->get('name');
+   }
+
+   else{
+
+   	 echo "no Session data";
+   }
+
+  }
+
+
+  public function setSession(Request $request){
+
+  	
+       $request->session()->put('name', 'sajib');
+       echo "session data add";
+
+   }
+    
+
+   public function deleteSession(Request $request){
+
+  	
+       $request->session()->forget('name');
+       echo "session data delete";
+
+   }
+
+}

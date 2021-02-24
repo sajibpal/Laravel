@@ -1,0 +1,94 @@
+
+CheckAge.php**************
+
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+
+class CheckAge
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
+    {
+         if ($request->agecheck <= 200) {
+
+            return redirect('home');
+        }
+
+        return $next($request);
+    }
+}
+
+
+
+Web.php ********************
+
+
+//single middlewar use route
+
+Route::get('/aboutpage',function(){
+   
+   return view('aboutpage');
+
+ })->middleware('age');
+
+Route::get('/home',function(){
+
+    echo "your age not allow this page";
+ });
+
+
+
+
+//group middleware use multiple route
+
+Route::group(['middleware' => ['age']], function () {
+
+	Route::get('/aboutpage',function(){
+   
+     return view('aboutpage');
+
+  });
+
+	Route::get('/about',function(){
+	echo "welcome about this page";
+  });
+
+   
+});
+
+
+
+Kernel.php ************************
+
+    */
+    protected $routeMiddleware = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+      **'age' => \App\Http\Middleware\CheckAge::class,
+    ];
+
+
+
+//create middleware by cmd 
+
+php artisan make:middleware CheckAge
+
+
+brower url =http://localhost:8000/aboutpage?agecheck=300

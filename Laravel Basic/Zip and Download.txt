@@ -1,0 +1,49 @@
+web.php ****************
+
+
+Route::get('/zip', [Sajibcontroller::class, 'Zipfile']);
+
+
+
+SajibController.php *******************
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Product;
+
+use ZipArchive; **************
+use File; *************
+
+class Sajibcontroller extends Controller
+{
+    //
+  public function Zipfile()
+    {
+       
+      $zip=new  ZipArchive;
+      $filename='myzip.zip'; // myzip.zip name file create hobe 
+
+      if($zip->open(public_path($filename), ZipArchive::CREATE)==TRUE)
+       
+       {
+
+        $file=File::files(public_path('myfile')); //public myfile folder vittor je image ache
+
+        foreach ($file as $key => $value) {
+            
+          $newzipfile=basename($value);
+          $zip->addFile($value,$newzipfile);
+        }
+
+        $zip->close();
+       }
+       
+      return response()->download(public_path($filename)); //zip download hobe
+    }
+   
+
+}
+

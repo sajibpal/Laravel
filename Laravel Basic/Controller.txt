@@ -1,0 +1,58 @@
+Web.php *************
+
+
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
+Route::get('/about','ShowProfile@Pal');
+
+Route::get('/aboutpage','ShowProfile@Sajib');
+
+
+
+
+
+ShowProfile.php *************
+
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class ShowProfile extends Controller
+{
+    public function Sajib()
+    {
+        return view('welcome'); 
+    }
+  
+     public function Pal()
+    {
+        echo "pal information"; 
+    }
+}
+
+
+
+//create  controller by cmd 
+
+php artisan make:controller ShowProfile  

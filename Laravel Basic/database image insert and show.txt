@@ -1,0 +1,163 @@
+form.blade.php ****************
+
+
+@extends('welcome');
+@section('contain')
+  
+        <div class="container">
+
+
+           @if ($errors->any())
+	         <div class="alert alert-danger">
+	           <ul>
+	            @foreach ($errors->all() as $error)
+	                <li>{{ $error }}</li>
+	            @endforeach
+	          </ul>
+	       </div>
+	     @endif
+
+           <form action="{{ route('postdata') }}" method='post' enctype="multipart/form-data" >
+           	 @csrf
+			  <div class="form-group">
+			    <label>Full Name</label>
+			    <input type="text" class="form-control"  >
+			  </div>
+			 <div class="form-group">
+			    <label for="exampleFormControlFile1">Image file input</label>
+			    <input type="file" class="form-control-file"name="image" >
+                          </div>
+
+			  <button type="submit" class="btn btn-primary">Submit</button>
+			</form>
+
+               </div>
+
+@endsection
+
+
+
+web.php ****************
+
+
+<?php
+
+use App\Http\Controllers\ShowProfile;
+use Illuminate\Support\Facades\Route;
+
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
+
+Route::post('page/form',[ShowProfile::class,'Postdata'])->name('postdata');
+
+
+Route::get('page/form',[ShowProfile::class,'Showimage'])->name('show');
+
+
+Showprofile.php ******************
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use DB;
+class ShowProfile extends Controller
+{
+    //
+     public function Sajib()
+	    {
+	        return view('welcome'); 
+	    }
+	  
+	     public function Form()
+	    {
+	       return view('page.form'); 
+	    }
+
+       //
+
+	      public function Postdata(Request $request)
+	      {
+
+	      	 $validatedData = $request->validate([
+                 'image' =>  'required|mimes:jpeg,png,jpg,bmp,gif,svg|max:2048',
+               ]);
+	       
+	       $data=array();
+	       $image=$request->file('image');
+	       
+         
+      if ($image){
+
+        $imagenameurl = time().'.'.$image->getClientOriginalExtension();
+        $destinationPath ='public/imagefile/';
+        $image->move($destinationPath, $imagenameurl);
+        $data['image']=$destinationPath.$imagenameurl;
+
+        DB::table('users')->insert($data);  
+        return Redirect()->to('/');
+      }
+      else{
+            //without  image post save
+
+      	 DB::table('users')->insert($data);
+      }
+
+	  }
+
+     //database show image 
+
+	  public function Showimage(){
+
+	  	    $show=DB::table('users')->get();
+
+	       return view('page.datashow',compact('show')); 
+	  }
+
+   
+}
+
+datashow.blade.php ********************
+
+
+
+@extends('welcome');
+@section('contain')
+  
+    <div class="container">
+      <br>
+		<table class="table">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">Full Name</th>
+		      <th scope="col">Address</th>
+		      <th scope="col">Created at</th>
+		       <th scope="col">Option</th>
+		    </tr>
+		  </thead>
+		  <tbody> 
+		  @foreach($show as $row) 
+		    <tr>
+		        <td>{{$row->id}}</td>	
+		        <td><img src="{{  URL::to( $row->image) }}" style=" height: 60px; width: 60px;"></td>
+
+		      <td>
+		      	<a href="" class="btn btn-sm btn-primary">Edit</a>
+		      	<a href="" class="btn btn-sm btn-success" id="delete">Delete</a>
+		      	<a href="" class="btn btn-sm btn-info">View</a>
+		      </td>
+		    </tr>
+		   @endforeach
+
+		  </tbody>
+	</table>
+ </div>
+ 
+@endsection
