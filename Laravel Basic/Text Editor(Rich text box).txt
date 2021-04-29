@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	
+
+			
+			
+</head>
+
+<body>
+
+<form  method="post" action="{{url('/save_brand')}}"  class="form-horizontal">
+{{ csrf_field() }}
+	
+ <div class="control-group hidden-phone">
+  <label class="control-label" for="textarea2">Brand Details</label>
+   <div class="controls">
+     <textarea class="cleditor" name="brand_details" id="textarea2" rows="3"></textarea>
+     </div>
+ </div> 		
+</form>	
+</body>
+
+</html>
+
+
+//route
+Route::post('/save_brand',[Brand::class,'Savebrand']);
+
+
+Brand.php*********************
+
+
+ public function Savebrand(Request $request){
+
+    	   $data=array();
+	       
+	          $data['brand_descption']=strip_tags($request->brand_details); //remove html tag
+	          DB::table('brands')->insert($data);
+
+          }
