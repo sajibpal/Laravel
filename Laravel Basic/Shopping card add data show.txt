@@ -1,0 +1,200 @@
+//cmd command create shoppingcart
+
+composer require hardevine/shoppingcart
+
+//check shopping card is install your project
+composer.joson
+ "license": "MIT",
+    "require": {
+        "php": "^7.3|^8.0",
+        "fideloper/proxy": "^4.4",
+        "fruitcake/laravel-cors": "^2.0",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "hardevine/shoppingcart": "^2.9",************
+        "laravel/framework": "^8.12",
+        "laravel/tinker": "^2.5"
+    },
+
+
+//card remove default tax value
+vendor->hardveine->shoppingcard->config->cart.php-> 'tax' => 0,
+
+
+app.php **********
+
+    'providers' => [
+
+        Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class,
+
+       ],
+
+ 'aliases' => [
+ 
+     'Cart' =>Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class,
+
+    ],
+
+
+product_detail.blade.php************
+
+                     <div class="col-sm-7">
+                            <div class="product-information"><!--/product-information-->
+                               
+                                <span>
+                                    <span>{{($productitem->product_name)}}</span>
+                                    <form action="{{url('/add_card')}}" method="post">
+                                         {{ csrf_field() }}
+                                        <label>Quantity:</label>
+                                        <input type="text" name="quenty" value="3" />
+                                        <input type="hidden" value="{{($productitem->product_id)}}" name="product_id">
+                                        <button type="Submit" class="btn btn-fefault cart">
+                                            <i class="fa fa-shopping-cart"></i>
+                                            Add to cart
+                                        </button>
+                                    </form>
+                              
+                            </div><!--/product-information-->
+                         </div>
+
+
+web.php*****************
+
+Route::post('/add_card',[CardController::class,'AddCard']);
+Route::get('/show_card',[CardController::class,'ShowCard']);
+
+
+CardController.php************
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use DB;
+use Session;
+session_start();
+use Cart;
+
+class CardController extends Controller
+{
+      public function AddCard(Request $request){
+              
+             $quenty=$request->quenty; 
+             $product_id=$request->product_id;
+           
+             $productsdetail= DB::table('products')
+              ->where('product_id',$product_id)
+              ->first();
+                                            //qty,id,name,price,options fixed arry name index
+               $data['qty']=$quenty;
+               $data['id']=$productsdetail->product_id;
+               $data['name']=$productsdetail->product_name;
+               $data['price']=$productsdetail->product_price;
+               $data['options']['image']=$productsdetail->product_image;
+              
+              Cart::add($data);
+
+              return Redirect::to('/show_card');
+       
+        }
+
+         public function ShowCard(){
+              
+            
+             $categorydetails= DB::table('categorys')
+              ->where('category_status',1)
+              ->first();
+
+              return view('card_show',compact('categorydetails'));
+       
+        }
+
+}
+
+card_show.blade.php*****************
+
+ 
+
+   <section id="cart_items">
+		<div class="container col-sm-12">
+			<div class="breadcrumbs">
+				<ol class="breadcrumb">
+				  <li><a href="#">Home</a></li>
+				  <li class="active">Shopping Cart</li>
+				</ol>
+			</div>
+			<div class="table-responsive cart_info">
+
+				<?php
+				 $content=Cart::content();
+				?>
+				<table class="table table-condensed">
+					<thead>
+						<tr class="cart_menu">
+							<td class="image">Image</td>
+							<td class="description">Name</td>
+							<td class="price">Price</td>
+							<td class="quantity">Quantity</td>
+							<td class="total">Total</td>
+							<td class="total">Action</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody>
+					   @foreach($content as $v_rowcontent) 
+						<tr>
+							<td class="cart_product">
+								<a href=""><img src="{{ URL::to( $v_rowcontent->options->image) }}" style=" height:60px; width:60px;" alt=""></a>
+							</td>
+							<td class="cart_description">
+								<h5><a href="">{{( $v_rowcontent->name)}}</a></h5>
+								
+							</td>
+							<td class="cart_price">
+								<p>{{( $v_rowcontent->price)}}</p>
+							</td>
+							<td class="cart_quantity">
+								<div class="cart_quantity_button">
+									<a class="cart_quantity_up" href=""> + </a>
+									<input class="cart_quantity_input" type="text" name="quantity" value="{{( $v_rowcontent->qty)}}" autocomplete="off" size="2">
+									<a class="cart_quantity_down" href=""> - </a>
+								</div>
+							</td>
+							<td class="cart_total">
+								<p class="cart_total_price">{{($v_rowcontent->total)}}</p>
+							</td>
+							<td class="cart_delete">
+								<a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
+							</td>
+						</tr>
+                                         @endforeach
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section> <!--/#cart_items-->
+
+	<section id="do_action">
+		<div class="container">
+			<div class="heading">
+				<h3>What would you like to do next?</h3>
+				<p>Choose if you have a discount code or reward points you want to use or would like to estimate your delivery cost.</p>
+			</div>
+			<div class="row">
+				
+				<div class="col-sm-8">
+					<div class="total_area">
+						<ul>
+							<li>Cart Sub Total <span>{{Cart::subtotal()}}</span></li>
+							<li>Eco Tax <span>{{Cart::tax()}}</span></li>
+							<li>Shipping Cost <span>Free</span></li>
+							<li>Total <span>{{Cart::total()}}</span></li>
+						  </ul>
+							<a class="btn btn-default update" href="">Update</a>
+							<a class="btn btn-default check_out" href="">Check Out</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section><!--/#do_action-->
